@@ -21,18 +21,28 @@ const string abc = "abcdefghijklmnopqrstuvwxyz";
 int dirx[4] = {0,-1,1,0};
 int diry[4] = {-1,0,0,1};
 
-// O(N log log N)
-ll sieve_size;
-bitset<10000010> bs; //10^7 lim aprox
-void sieve(ll upper) {        
-    sieve_size = upper + 1;    
-    bs.set();                     
-    bs[0] = bs[1] = 0;             
-    for (ll i = 2; i < sieve_size; ++i){
-        if (bs[i]){
-            for(ll j = i * i; j < sieve_size; j += i) bs[j] = 0;
+// O ((V+E)*log V)
+typedef vector<pii> vii;
+vi dijkstra(vector<vii> &graf, int s){
+    vi dist(graf.size(), INT_MAX); 
+    dist[s] = 0;
+    priority_queue<pii, vii, greater<pii>> pq; 
+    pq.push({0, s});
+    while(!pq.empty()){
+        pii front = pq.top(); pq.pop();
+        int d = front.ff;
+        int u = front.ss;
+        if (d > dist[u]) continue;
+
+        for (pii node : graf[u]){
+            if (dist[u] + node.ss < dist[node.ff]){
+                dist[node.ff] = dist[u] + node.ss;
+                pq.push({dist[node.ff], node.ff});
+            }
         }
     }
+
+    return dist;
 }
 
 int main() {
@@ -41,7 +51,5 @@ int main() {
     // freopen("file.in", "r", stdin);
     // freopen("file.out", "w", stdout);
 
-    ll lim = 1e6 + 1;
-    sieve(lim);
-
+    
 }

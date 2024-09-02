@@ -21,7 +21,7 @@ const string abc = "abcdefghijklmnopqrstuvwxyz";
 int dirx[4] = {0,-1,1,0};
 int diry[4] = {-1,0,0,1};
 
-// for strings
+// Trie recursivo
 struct TrieNode {
 	map<char, TrieNode*> children;
 	bool endofword;
@@ -85,7 +85,59 @@ struct TrieNode {
     }
 };
 
-// for bitwise
+// Trie tabular
+struct node{
+    int childs[27];
+    node(){
+        memset(childs, -1, sizeof childs);
+    }
+};
+
+struct TrieNode {
+	vector<node> nds;
+	vi endofword;
+    
+	TrieNode(){
+		nds.pb(node());	
+        endofword.pb(0);
+    }
+
+    void insert(string word){
+        int cur = 0;
+        for(int i = 0; i < word.size(); i++){
+            int ch = word[i] - 'a';
+            if(nds[cur].childs[ch] == -1){
+                nds[cur].childs[ch] = nds.size();
+                nds.pb(node());
+                endofword.pb(0);
+            }
+            cur = nds[cur].childs[ch];
+        }
+        endofword[cur]++;
+    }
+
+    int search(string word){
+        int cur = 0;
+        for(int i = 0; i < word.size(); i++){
+            int ch = word[i] - 'a';
+            if(nds[cur].childs[ch] == -1) return 0;
+            cur = nds[cur].childs[ch];
+        }
+        return endofword[cur];
+    }
+
+    void remove(string word) {
+        int cur = 0;
+        for(int i = 0; i < word.size(); i++){
+            int ch = word[i] - 'a';
+            if(nds[cur].childs[ch] == -1) return;
+            cur = nds[cur].childs[ch];
+        }
+        endofword[cur]--; 
+    }
+};
+
+// TrieBit recursivo
 struct TrieBit{
     TrieBit* children[2];
 	int passNums;
@@ -143,6 +195,81 @@ struct TrieBit{
 
         return 0;
         
+    }
+
+    void mergeTries(TrieBit *oTrie){
+		for(int i = 0; i <= 1; i++){
+			if (oTrie -> children[i]){
+				if (children[i]){
+					children[i] -> mergeTries(oTrie -> children[i]);
+				}else{
+					children[i] = oTrie -> children[i];
+				}
+			}
+		}
+	}
+};
+
+
+// TrieBit tabular
+struct node{
+  int childs[2]{-1, -1};
+};
+
+struct TrieBit{
+    vector<node> nds;
+	vi passNums;
+    
+	TrieBit(){
+        nds.pb(node());
+        passNums.pb(0);
+	}
+
+    void insert(int num){
+        int cur = 0;
+        for(int i = 30; i >= 0; i--){
+            bool bit = (num >> i) & 1;
+
+            if(nds[cur].childs[bit] == -1){
+                nds[cur].childs[bit] = nds.size();
+                nds.pb(node());
+                passNums.pb(0);
+            }
+
+            passNums[cur]++;
+            cur = nds[cur].childs[bit];
+        }
+
+        passNums[cur]++;
+    }
+
+    void remove(int num){   
+        int cur = 0;
+        for(int i = 30; i >= 0; i--){
+            bool bit = (num >> i) & 1;
+            passNums[cur]--;
+            cur = nds[cur].childs[bit];
+        }
+
+        passNums[cur]--;
+    }
+
+    int maxXor(int num){
+        int ans = 0;
+        int cur = 0;
+        for(int i = 30; i >= 0; i--){
+            bool bit = (num >> i) & 1;
+
+            int n1 = nds[cur].childs[!bit]; 
+            if (n1 != -1 && passNums[n1]){
+                ans += (1 << i);
+                bit = !bit;
+            }
+
+            cur = nds[cur].childs[bit];
+        }
+
+        return ans;
     }
 };
 

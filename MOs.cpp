@@ -29,9 +29,9 @@ struct query {
 };
 
 vector<query> qs; // queries
-vl vals; // values 
-vl ans; // ans of queries
-ll S; // size of blocks 
+vi vals; // values 
+vi ans; // ans of queries
+int S; // size of blocks 
 
 bool cmp (const query &a, const query &b) {
 	int A = a.l/S, B = b.l/S;
@@ -39,11 +39,11 @@ bool cmp (const query &a, const query &b) {
 	return A & 1 ? a.r > b.r : a.r < b.r;
 }
 
-void del(ll idx){
+void del(int idx){
 	// implement del 
 }
 
-void add(ll idx){
+void add(int idx){
 	// implement add
 }
 
@@ -52,7 +52,7 @@ int get_ans(){
 }
 
 void MOs(){
-	ll n = vals.size();
+	int n = vals.size();
 	S = sqrt(n);
 	ans.assign(qs.size(), 0);
 	sort(all(qs), cmp);
